@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { TournoiContext } from "../context/TournoiContext";
+import { creerTournoiSupabase } from "../lib/tournoisSupabase";
 
 export default function CreationTournoi() {
   const { setTournoi } = useContext(TournoiContext);
@@ -12,24 +13,35 @@ export default function CreationTournoi() {
   const [nombreEquipes, setNombreEquipes] = useState(8);
   const [logo, setLogo] = useState("");
 
-  function creerTournoi() {
-    setTournoi({
-      nom,
-      lieu,
-      date,
-      logo,
-      nombreEquipes,
+  async function creerTournoi() {
+  const nouveauTournoi = {
+    nom,
+    lieu,
+    date,
+    logo,
 
-      groupes: [],
-      equipes: [],
-      matchs: [],
-      playoffs: [],
+    nombreEquipes,
 
-      termine: false,
-    });
+    groupes: [],
+    equipes: [],
+    matchs: [],
+    playoffs: [],
 
-    navigate("/equipes");
-  }
+    termine: false,
+  };
+
+  const supabaseId =
+    await creerTournoiSupabase(
+      nouveauTournoi
+    );
+
+  setTournoi({
+    ...nouveauTournoi,
+    supabaseId,
+  });
+
+  navigate("/equipes");
+}
 
   return (
     <div

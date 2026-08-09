@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { Tournoi } from "../types/tournoi";
 import { genererPlayoffs as creerPlayoffs } from "../utils/genererPlayoffs";
+import { mettreAJourTournoiSupabase } from "../lib/tournoisSupabase";
 
 interface TournoiContextType {
   tournoi: Tournoi | null;
@@ -57,29 +58,33 @@ useEffect(() => {
   }
 }, [tournoi]);
 
-  function updateMatch(
-    matchId: number,
-    scoreA: number,
-    scoreB: number
-  ) {
-    if (!tournoi) return;
+  async function updateMatch(
+  matchId: number,
+  scoreA: number,
+  scoreB: number
+) {
+  if (!tournoi) return;
 
-    const nouveauTournoi = structuredClone(tournoi);
+  const nouveauTournoi = structuredClone(tournoi);
 
-    const match = nouveauTournoi.matchs.find(
-      (m) => m.id === matchId
-    );
+  const match = nouveauTournoi.matchs.find(
+    (m) => m.id === matchId
+  );
 
-    if (!match) return;
+  if (!match) return;
 
-    match.scoreA = scoreA;
-    match.scoreB = scoreB;
-    match.joue = true;
+  match.scoreA = scoreA;
+  match.scoreB = scoreB;
+  match.joue = true;
 
-    setTournoi(nouveauTournoi);
-  }
+  setTournoi(nouveauTournoi);
 
-  function updatePlayoffMatch(
+  await mettreAJourTournoiSupabase(
+    nouveauTournoi
+  );
+}
+
+  async function updatePlayoffMatch(
   matchId: number,
   scoreA: number,
   scoreB: number
@@ -216,24 +221,34 @@ if (
 }
 
   setTournoi(nouveauTournoi);
+
+  await mettreAJourTournoiSupabase(
+  nouveauTournoi
+);
 }
 
-  function genererPlayoffs() {
-    if (!tournoi) return;
+  async function genererPlayoffs() {
+  if (!tournoi) return;
 
-    if (tournoi.playoffs.length > 0) return;
+  if (tournoi.playoffs.length > 0) return;
 
-    const playoffs = creerPlayoffs(
-      tournoi.equipes,
-      tournoi.matchs,
-      tournoi.groupes
-    );
+  const playoffs = creerPlayoffs(
+    tournoi.equipes,
+    tournoi.matchs,
+    tournoi.groupes
+  );
 
-    setTournoi({
-      ...tournoi,
-      playoffs,
-    });
-  }
+  const nouveauTournoi = {
+    ...tournoi,
+    playoffs,
+  };
+
+  setTournoi(nouveauTournoi);
+
+  await mettreAJourTournoiSupabase(
+    nouveauTournoi
+  );
+}
 
   return (
     <TournoiContext.Provider

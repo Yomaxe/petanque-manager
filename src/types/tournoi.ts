@@ -55,6 +55,7 @@ export interface Tournoi {
   lieu: string;
   date: string;
   logo?: string;
+  supabaseId?: string;
   nombreEquipes: number;
 
   groupes: Groupe[];
