@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { TournoiContext } from "../context/TournoiContext";
-import { creerTournoiSupabase } from "../lib/tournoisSupabase";
+import {creerTournoiSupabase,mettreAJourTournoiSupabase,} from "../lib/tournoisSupabase";
 
 export default function CreationTournoi() {
   const { setTournoi } = useContext(TournoiContext);
@@ -35,10 +35,18 @@ export default function CreationTournoi() {
       nouveauTournoi
     );
 
-  setTournoi({
+  console.log("SUPABASE ID =", supabaseId);
+
+  const tournoiComplet = {
     ...nouveauTournoi,
     supabaseId,
-  });
+  };
+
+  setTournoi(tournoiComplet);
+
+  await mettreAJourTournoiSupabase(
+  tournoiComplet
+);
 
   navigate("/equipes");
 }
