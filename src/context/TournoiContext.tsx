@@ -58,7 +58,7 @@ useEffect(() => {
   }
 }, [tournoi]);
 
-useEffect(() => {
+/*useEffect(() => {
   if (!tournoi || !tournoi.supabaseId) return;
   const supabaseId = tournoi.supabaseId;
   const interval = setInterval(async () => {
@@ -73,7 +73,7 @@ useEffect(() => {
   }, 5000);
 
   return () => clearInterval(interval);
-}, [tournoi?.supabaseId]);
+}, [tournoi?.supabaseId]);*/
 
   async function updateMatch(
   matchId: number,
