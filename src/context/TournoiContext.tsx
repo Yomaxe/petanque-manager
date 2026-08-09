@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { Tournoi } from "../types/tournoi";
 import { genererPlayoffs as creerPlayoffs } from "../utils/genererPlayoffs";
-import { mettreAJourTournoiSupabase } from "../lib/tournoisSupabase";
+import {mettreAJourTournoiSupabase,chargerTournoiSupabase,} from "../lib/tournoisSupabase";
 
 interface TournoiContextType {
   tournoi: Tournoi | null;
@@ -57,6 +57,23 @@ useEffect(() => {
     );
   }
 }, [tournoi]);
+
+useEffect(() => {
+  if (!tournoi || !tournoi.supabaseId) return;
+  const supabaseId = tournoi.supabaseId;
+  const interval = setInterval(async () => {
+  const tournoiSupabase =
+      await chargerTournoiSupabase(
+  supabaseId
+  );
+
+    if (!tournoiSupabase) return;
+
+    setTournoi(tournoiSupabase);
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [tournoi?.supabaseId]);
 
   async function updateMatch(
   matchId: number,

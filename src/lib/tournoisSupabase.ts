@@ -54,5 +54,5 @@ export async function chargerTournoiSupabase(
     return null;
   }
 
-  return data;
+  return data.data;
 }
